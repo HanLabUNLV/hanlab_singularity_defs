@@ -43,9 +43,10 @@ Include: yum
     # Set system locale
     export LC_ALL=C
 
-    yum install -y sudo wget vim which numactl procps git
-    yum install -y hostname lscpu uptime redhat-lsb
-    yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients parallel
+    yum install -y sudo wget vim which numactl procps git hostname redhat-lsb
+    yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum install -y parallel
 
     yum repolist
     yum install -y yum-cron
@@ -59,7 +60,6 @@ Include: yum
     yum install -y intel-mpi-2018.4-057 intel-tbb-2020.2-102 intel-mkl-64bit-2020.1-102 intelpython3-2020.0-014
 
     # install R dependencies
-    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
     yum install -y tar make help2man zlib-devel bzip2-devel xz-devel ncurses-devel cairo-devel gcc-c++ libcurl-devel libjpeg-devel libpng-devel libtiff-devel readline-devel texlive-helvetic texlive-metafont texlive-psnfss texlive-times xdg-utils pango-devel tcl-devel tk-devel perl-macros texinfo gcc-gfortran libXt-devel libXmu-devel libX11-devel openssl-devel
     yum install -y libjpeg-turbo-devel  libtiff-devel pango-devel
     yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
@@ -93,6 +93,7 @@ Include: yum
     R --slave -e 'install.packages("ape",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("phangorn",repos="https://cran.rstudio.com/")'
     yum install -y ImageMagick-c++-devel libssh2-devel
+    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/mnormt/mnormt_1.5-6.tar.gz", repos=NULL)'
     R --slave -e 'install.packages("phytools",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("geiger",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("ouch",repos="https://cran.rstudio.com/")'

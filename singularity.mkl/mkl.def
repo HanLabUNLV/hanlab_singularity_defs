@@ -26,9 +26,10 @@ source /opt/intel/compilers_and_libraries/linux/mkl/bin/mklvars.sh intel64
 #This is where the meat of your setup will live, including making directories, and installing software and libraries
 #You cannot copy files from the host to your container in this section, but you can of course download with commands like git clone and wget and curl
 
-yum install -y sudo wget vim which numactl procps git
-yum install -y hostname lscpu uptime redhat-lsb
-yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients parallel
+yum install -y sudo wget vim which numactl procps git hostname redhat-lsb
+yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients
+yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
+yum install -y parallel
 
 yum repolist
 yum install -y yum-cron
