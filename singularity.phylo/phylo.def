@@ -53,11 +53,13 @@ Include: yum
     source /opt/conda/etc/profile.d/conda.sh
     conda config --add channels conda-forge
     conda config --append channels bioconda
+    conda config --append channels etetoolkit
     conda update -y -n base conda
 
     # create conda environment and install conda packages 
-    #conda create -n phylo --file phylo.list
-    conda create -n phylo python=3.6
+    conda create -n phylo --file phylo.list
+    #conda create -n phylo python=3.6
+
     rm miniconda.sh -f
     conda clean -a
     
@@ -65,8 +67,8 @@ Include: yum
     conda activate phylo
 
     # install packages ete3
-    conda install -c etetoolkit ete3 ete_toolchain
-    conda install scipy numpy scikit-learn matplotlib pandas networkx 
+    #conda install -c etetoolkit ete3 ete_toolchain
+    #conda install scipy numpy scikit-learn matplotlib pandas networkx 
 
     # install packages scikit-network 
     pip install scikit-network 
@@ -100,6 +102,7 @@ channels:
   - conda-forge
   - defaults
   - bioconda
+  - etetoolkit
 EOF
 
 
