@@ -83,7 +83,6 @@ Include: yum
     make
     make install
     /opt/R/${R_VERSION}/bin/R --version
-    ln -s /opt/R/${R_VERSION}/bin/R /usr/bin/R 
 
   
     # installing packages from cran
@@ -118,6 +117,7 @@ Include: yum
 cat > /.singularity.d/env/99-custom.sh <<EOF
 #!/bin/bash
 SINGULARITY_SHELL=/bin/bash
+export PATH=/opt/R/3.6.3/bin/:$PATH
 mkdir -p ~/R/singularity-library/3.6.3/Bioc
 export R_LIBS_USER=~/R/singularity-library/3.6.3/Bioc
 EOF

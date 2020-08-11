@@ -4,8 +4,9 @@
 _libgcc_mutex=0.1=conda_forge
 _openmp_mutex=4.5=0_gnu
 argtable2=2.13=0
-ca-certificates=2020.4.5.2=hecda079_0
-certifi=2020.4.5.2=py36h9f0ad1d_0
+biopython=1.77=py36h8c4c3a4_0
+ca-certificates=2020.6.20=hecda079_0
+certifi=2020.6.20=py36h9f0ad1d_0
 clustalo=1.2.4=h4346872_0
 cycler=0.10.0=py_2
 dbus=1.13.6=he372182_0
