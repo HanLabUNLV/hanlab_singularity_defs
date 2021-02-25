@@ -46,7 +46,7 @@ Include: yum
     yum install -y parallel
 
     yum -y groupinstall "Development Tools" 
-    yum -y install zlib-devel
+    yum install -y mc zlib-devel bzip2-devel xz-devel libcurl-devel openssl-devel
 
     # download and install miniconda 
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -64,6 +64,14 @@ Include: yum
     # activate conda for further installation
     conda activate rnaseq
 
+    # install Fusera
+    wget https://github.com/mitre/fusera/releases/download/v2.0.0/fusera
+    wget https://github.com/mitre/fusera/releases/download/v2.0.0/sracp
+    chmod +x fusera
+    chmod +x sracp
+    mv fusera opt/conda/envs/rnaseq/bin/ 
+    mv sracp opt/conda/envs/rnaseq/bin/ 
+
     # install rsem
 #    git clone https://github.com/deweylab/RSEM.git
 #    cd RSEM
@@ -73,7 +81,6 @@ Include: yum
 #    rm -rf RSEM
 #
     # install RSeQC
-    yum -y install libcurl-devel
     pip install RSeQC
 
     # install TrimGalore
@@ -87,6 +94,7 @@ Include: yum
     for i in $(seq 1 10); do
       mkdir -p /data${i};
     done
+    mkdir /etc/ncbi
 
     # create custom bash script to set env
 cat > /.singularity.d/env/99-custom.sh <<EOF

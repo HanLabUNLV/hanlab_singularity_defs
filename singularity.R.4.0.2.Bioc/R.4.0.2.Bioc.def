@@ -69,9 +69,9 @@ Include: yum
     # install R
     source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh -arch intel64
     source /opt/intel/compilers_and_libraries/linux/mkl/bin/mklvars.sh intel64
-    export R_VERSION=3.6.3
+    export R_VERSION=4.0.2
     export MKL="-Wl,--no-as-needed -lmkl_gf_lp64 -Wl,--start-group -lmkl_gnu_thread  -lmkl_core  -Wl,--end-group -fopenmp  -ldl -lpthread -lm"
-    curl -O https://cran.rstudio.com/src/base/R-3/R-${R_VERSION}.tar.gz
+    curl -O https://cran.rstudio.com/src/base/R-4/R-${R_VERSION}.tar.gz
     tar -xzvf R-${R_VERSION}.tar.gz
     cd R-${R_VERSION}
     ./configure \
@@ -83,7 +83,7 @@ Include: yum
     make
     make install
     /opt/R/${R_VERSION}/bin/R --version
-    ln -s /opt/R/${R_VERSION}/bin/R /usr/bin/R 
+    export PATH=/opt/R/4.0.2/bin/:$PATH
 
   
     # installing packages from cran
@@ -118,9 +118,9 @@ Include: yum
 cat > /.singularity.d/env/99-custom.sh <<EOF
 #!/bin/bash
 SINGULARITY_SHELL=/bin/bash
-export PATH=/opt/R/3.6.3/bin/:$PATH
-mkdir -p ~/R/singularity-library/3.6.3/Bioc
-export R_LIBS_USER=~/R/singularity-library/3.6.3/Bioc
+export PATH=/opt/R/4.0.2/bin/:$PATH
+mkdir -p ~/R/singularity-library/4.0.2/Bioc
+export R_LIBS_USER=~/R/singularity-library/4.0.2/Bioc
 EOF
 
 %test
