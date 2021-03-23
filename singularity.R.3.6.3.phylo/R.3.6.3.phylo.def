@@ -99,6 +99,9 @@ Include: yum
     R --slave -e 'install.packages("geiger",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("ouch",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("pmc",repos="https://cran.rstudio.com/")'
+    R --slave -e 'devtools::install_github("lamho86/phylolm")'
+    R --slave -e 'devtools::install_github("JClavel/mvMORPH")'
+    R --slave -e 'install.packages("OUwie",repos="https://cran.rstudio.com/")'
 
     # installing from bioc
     R --slave -e 'install.packages("BiocManager",repos="https://cran.rstudio.com/")'
