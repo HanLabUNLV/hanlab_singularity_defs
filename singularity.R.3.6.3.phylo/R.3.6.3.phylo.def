@@ -91,6 +91,8 @@ Include: yum
     R --slave -e 'install.packages("devtools",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("dplyr",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("tidyverse",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("optimr",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("optimx", repos="http://R-Forge.R-project.org")'
     R --slave -e 'install.packages("ape",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("phangorn",repos="https://cran.rstudio.com/")'
     yum install -y ImageMagick-c++-devel libssh2-devel
