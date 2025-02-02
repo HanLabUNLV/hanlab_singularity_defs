@@ -1,0 +1,91 @@
+Bootstrap: docker
+From: rocker/r-ubuntu:22.04
+#From: rocker/r-ver:4.3.3 # openblas slower than r-ubuntu
+
+%labels
+    SINGULARITY_VERSION 3.5.3-1.1.el7
+    SINGULARITY_IMAGE_SIZE 20480
+
+    AUTHOR_NAME Mira Han
+    AUTHOR_EMAIL mira.han@unlv.edu
+
+    LAST_UPDATED 20240913
+
+%environment
+    # Set system locale
+    export LC_ALL=C
+
+    alias ls='ls --color=auto -h'
+    alias rm='rm -i'
+    alias vi='vim'
+
+%files 
+
+%runscript
+    exec /bin/bash --noprofile  "$@"
+
+%startscript
+
+%post -c /bin/bash
+
+
+    echo "Hello from inside the container"
+    # Set system locale
+    export LC_ALL=C
+    apt-get -y update && apt-get install -y wget zip pigz gawk git vim parallel
+    apt install -y build-essential
+    apt-get install -y gcc-10 gcc-10-base gcc-10-doc g++-10
+    apt install -y cmake 
+    apt install -y libxml2-dev libfontconfig1-dev libcurl4-openssl-dev libssl-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libgsl-dev
+    apt install -y libopenblas-dev
+
+    #apt-get install -y intel-mkl # mkl slower than openblas
+    ARCH=$(uname -m)
+    update-alternatives --set "libblas.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/openblas-pthread/libblas.so.3"
+    update-alternatives --set "liblapack.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/openblas-pthread/liblapack.so.3"
+    #update-alternatives --set "libblas.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/libmkl_rt.so" 
+    #update-alternatives --set "liblapack.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/libmkl_rt.so"
+  
+    # installing packages from cran
+    R --slave -e 'install.packages("dplyr",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("tidyverse",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("copula",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("fastglm",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("Rtsne",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("reshape2",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("gridExtra",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("cowplot",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("ggplot2",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("ggpubr",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("ggpubr",repos="https://cran.rstudio.com/")'
+    #R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/locfit/locfit_1.5-9.4.tar.gz", repos=NULL, type="source")'
+    R --slave -e 'install.packages("devtools",repos="https://cran.rstudio.com/")'
+    #R --slave -e 'devtools::install_github("JSB-UCLA/scDesign2")'
+    R --slave -e 'devtools::install_local("src/scDesign2")'
+
+    # installing from bioc
+    R --slave -e 'install.packages("BiocManager",repos="https://cran.rstudio.com/")'
+    R --slave -e 'BiocManager::install("tximport",ask=FALSE)'
+    R --slave -e 'BiocManager::install("biomaRt",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("SplicingGraphs",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("DESeq2",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("DEXSeq",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("edgeR",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("limma",ask=FALSE)'
+    #R --slave -e 'BiocManager::install("qvalue",ask=FALSE)'
+
+
+
+    # create directories
+    mkdir -p /mnt /scratch 
+    mkdir -p /mnt/storage_cluster /mnt/data_schen_1
+    for i in $(seq 1 10); do
+      mkdir -p /data${i};
+    done
+
+    # create custom bash script to set env
+    echo "## setup R env" >> $SINGULARITY_ENVIRONMENT
+    echo "mkdir -p ~/R/singularity-library/4.3.2/scdesign2" >> $SINGULARITY_ENVIRONMENT
+    echo "export R_LIBS_USER=~/R/singularity-library/4.3.2/scdesign2" >> $SINGULARITY_ENVIRONMENT
+
+%test
