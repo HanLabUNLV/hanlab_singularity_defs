@@ -1,0 +1,105 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    SINGULARITY_VERSION 3.5.3-1.1.el7
+    SINGULARITY_IMAGE_SIZE 20480
+
+    AUTHOR_NAME Richard Van
+    AUTHOR_EMAIL richard.van@unlv.edu
+
+    LAST_UPDATED 20240913
+
+%environment
+    # Set system locale
+    export LC_ALL=C
+
+    alias ls='ls --color=auto -h'
+    alias rm='rm -i'
+    alias vi='vim'
+
+%files 
+    requirements.txt
+
+%runscript
+    exec /bin/bash --noprofile  "$@"
+
+%startscript
+
+%post -c /bin/bash
+
+    echo "Hello from inside the container"
+    # Set system locale
+    export LC_ALL=C
+    apt-get -y update && apt-get install -y wget zip pigz gawk git vim
+    apt install -y build-essential
+    apt-get install -y gcc-10 gcc-10-base gcc-10-doc g++-10
+    apt-get install -y libstdc++-10-dev libstdc++-10-doc
+    apt-get install -y libbz2-dev
+    apt-get install -y zlib1g-dev
+    apt-get install -y libncurses5-dev 
+    apt-get install -y liblzma-dev
+    apt-get install -y libdeflate-dev
+    apt-get install -y libcurl4-openssl-dev
+    apt-get install -y cmake pkg-config
+
+    # download and install miniconda 
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /opt/conda
+    source /opt/conda/etc/profile.d/conda.sh
+    conda update -y -n base conda
+    conda install -y -n base conda-libmamba-solver
+    conda config --set solver libmamba
+    conda config --add channels conda-forge
+    conda config --append channels bioconda
+
+    rm miniconda.sh -f
+    conda clean -y -a
+
+
+    # create conda environment and install conda packages 
+    conda create -n EPInformer python=3.8 
+
+
+    # activate conda for further installation
+    conda init
+    conda activate EPInformer
+
+    # install conda packages
+    conda install -y pandas scipy scikit-learn jupyter seaborn
+    conda install -y pytorch cpuonly -c pytorch
+    conda install -y pip
+
+    # pip install 
+    pip install -r requirements.txt
+
+    # create directories
+    mkdir -p /mnt /scratch 
+    mkdir -p /mnt/storage_cluster /mnt/data_schen_1
+    for i in $(seq 1 10); do
+      mkdir -p /data${i};
+    done
+    mkdir /etc/ncbi
+
+    # create custom bash script to set env
+    echo "export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH" >> $SINGULARITY_ENVIRONMENT
+    echo "## Activate conda environment" >> $SINGULARITY_ENVIRONMENT
+    echo "source /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+    echo "conda activate EPInformer" >> $SINGULARITY_ENVIRONMENT
+
+
+    # create condarc
+cat > /opt/conda/.condarc <<EOF
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+solver: libmamba
+envs_dirs:
+  - /opt/conda/envs
+EOF
+
+
+%test
+
+
