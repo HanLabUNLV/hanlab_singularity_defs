@@ -71,7 +71,7 @@ Include: yum
     #conda install scipy numpy scikit-learn matplotlib pandas networkx 
 
     # install packages scikit-network 
-    pip install scikit-network 
+    pip install scikit-network==0.15.0 
 
     # install packages iLearn
     git clone https://github.com/Superzchen/iLearn

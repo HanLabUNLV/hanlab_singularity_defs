@@ -21,6 +21,9 @@ Include: yum
     # Set system locale
     export LC_ALL=C
 
+    # set devtoolset-7
+    source /opt/rh/devtoolset-7/enable
+
     # set MKL vars
     source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh -arch intel64
     source /opt/intel/compilers_and_libraries/linux/mkl/bin/mklvars.sh intel64
@@ -44,7 +47,12 @@ Include: yum
     export LC_ALL=C
 
     yum install -y sudo wget vim which numactl procps git hostname redhat-lsb
-    yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients
+    yum install -y bzip2 tar openssh-server openssh-clients
+    yum install -y centos-release-scl
+    yum install -y devtoolset-7-gcc*
+    source scl_source enable devtoolset-7 
+    which gcc
+    gcc --version
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     yum install -y parallel
 
@@ -91,10 +99,10 @@ Include: yum
     R --slave -e 'install.packages("dplyr",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("tidyverse",repos="https://cran.rstudio.com/")'
     R --slave -e 'install.packages("Seurat",repos="https://cran.rstudio.com/")'
-
+    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/locfit/locfit_1.5-9.4.tar.gz", repos=NULL, type="source")'
     # installing from bioc
     R --slave -e 'install.packages("BiocManager",repos="https://cran.rstudio.com/")'
-    R --slave -e 'BiocManager::install()'
+    R --slave -e 'BiocManager::install(version="3.12")'
     R --slave -e 'BiocManager::install("tximport",ask=FALSE)'
     R --slave -e 'BiocManager::install("biomaRt",ask=FALSE)'
     R --slave -e 'BiocManager::install("SplicingGraphs",ask=FALSE)'
@@ -108,6 +116,7 @@ Include: yum
     R --slave -e 'BiocManager::install("WGCNA",ask=FALSE)'
     R --slave -e 'devtools::install_github("areyesq89/DEXSeqAlt")'
 
+    yum install pandoc
 
 
     # create directories
@@ -124,3 +133,5 @@ Include: yum
     echo "export R_LIBS_USER=~/R/singularity-library/4.0.2/Bioc" >> $SINGULARITY_ENVIRONMENT
 
 %test
+    which gcc
+    gcc --version

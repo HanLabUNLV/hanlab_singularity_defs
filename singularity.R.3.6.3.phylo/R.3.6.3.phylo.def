@@ -45,7 +45,13 @@ Include: yum
     export LC_ALL=C
 
     yum install -y sudo wget vim which numactl procps git hostname redhat-lsb
-    yum install -y bzip2 tar gcc gcc-c++ openssh-server openssh-clients
+    yum install -y bzip2 tar openssh-server openssh-clients
+    yum install -y centos-release-scl
+    yum install -y devtoolset-7-gcc*
+    source scl_source enable devtoolset-7 
+    which gcc 
+    gcc --version
+    yum install -y cmake nlopt-devel
     yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     yum install -y parallel
 
@@ -89,24 +95,28 @@ Include: yum
 
   
     # installing packages from cran
-    R --slave -e 'install.packages("devtools",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("dplyr",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("tidyverse",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("optimr",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("ape",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("phangorn",repos="https://cran.rstudio.com/")'
+    R --slave -e 'install.packages("devtools",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("dplyr",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("tidyverse",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("optimr",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("ape",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages(c("quadprog", "igraph", "fastmatch"),repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("https://mran.microsoft.com/snapshot/2021-04-03/src/contrib/phangorn_2.6.2.tar.gz", repos=NULL, type="source", lib="/opt/R/3.6.3/lib64/R/library/")'
     yum install -y ImageMagick-c++-devel libssh2-devel
-    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/mnormt/mnormt_1.5-6.tar.gz", repos=NULL)'
-    R --slave -e 'install.packages("phytools",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("geiger",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("ouch",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("pmc",repos="https://cran.rstudio.com/")'
-    #R --slave -e 'devtools::install_github("JClavel/mvMORPH")'
-    R --slave -e 'install.packages("car",repos="https://cran.rstudio.com/")'
-    R --slave -e 'install.packages("mvMORPH.tgz", repos=NULL, type="source")'
+    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/mnormt/mnormt_1.5-6.tar.gz", repos=NULL, lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("phytools",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("geiger",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("ouch",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("pmc",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    #R --slave -e 'devtools::install_github("JClavel/mvMORPH", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.2.2.tar.gz", repos=NULL, type="source", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages(c("carData", "abind", "pbkrtest", "quantreg", "maptools", "rio", "lme4"), repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("https://cran.r-project.org/src/contrib/Archive/car/car_3.0-0.tar.gz",repos=NULL, type="source", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages(c("corpcor", "spam", "glassoFast", "pbmcapply" ), repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
+    R --slave -e 'install.packages("/mvMORPH.tgz", repos=NULL, type="source", lib="/opt/R/3.6.3/lib64/R/library/")'
 
     # installing from bioc
-    #R --slave -e 'install.packages("BiocManager",repos="https://cran.rstudio.com/")'
+    #R --slave -e 'install.packages("BiocManager",repos="https://cran.rstudio.com/", lib="/opt/R/3.6.3/lib64/R/library/")'
     #R --slave -e 'BiocManager::install()'
 
 
