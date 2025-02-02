@@ -1,0 +1,96 @@
+Bootstrap: docker
+#From: tensorflow/tensorflow:2.4.3-gpu-jupyter
+From: tensorflow/tensorflow:2.6.1-gpu-jupyter
+
+%labels
+    SINGULARITY_VERSION 3.5.3-1.1.el7
+    SINGULARITY_IMAGE_SIZE 20480
+
+    AUTHOR_NAME Mira Han
+    AUTHOR_EMAIL mira.han@unlv.edu
+
+    LAST_UPDATED 20200427
+
+%environment
+    # Set system locale
+    export LC_ALL=C
+
+    alias ls='ls --color=auto -h'
+    alias rm='rm -i'
+    alias vi='vim'
+
+%files 
+    requirements.txt
+
+%runscript
+    exec /bin/bash --noprofile  "$@"
+
+%startscript
+    python --version
+
+%post -c /bin/bash
+
+    echo "Hello from inside the container"
+    # Set system locale
+    export LC_ALL=C
+    apt-get -y update && apt-get install -y wget git python3.8
+
+#    # download and install miniconda 
+#    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+#    bash miniconda.sh -b -p /opt/conda
+#    source /opt/conda/etc/profile.d/conda.sh
+#    conda config --add channels conda-forge
+#    conda config --append channels bioconda
+#    conda update -y -n base conda
+#    conda install mamba
+#
+#    # create conda environment and install conda packages 
+#    mamba create -n enformer python=3.8
+#    rm miniconda.sh -f
+#    conda clean -a
+#
+#    # activate conda for further installation
+#    conda init
+#    conda activate enformer
+#
+#    # install conda packages
+#    mamba install parallel pip-tools 
+#
+    # install pip packages
+    python3 -m pip install --upgrade pip 
+    pip install -r requirements.txt
+
+    # clone git repositories
+    cd /opt
+    git clone https://github.com/google-deepmind/deepmind-research.git
+    cd deepmind-research/
+    mv enformer/ ..
+    cd ..
+    rm -rf deepmind-research/
+
+    # create directories
+    mkdir -p /mnt /scratch 
+    mkdir -p /mnt/storage_cluster /mnt/data_schen_1
+    for i in $(seq 1 10); do
+      mkdir -p /data${i};
+    done
+    mkdir /etc/ncbi
+
+#    # create custom bash script to set env
+#    echo "## Activate conda environment" >> $SINGULARITY_ENVIRONMENT
+#    echo "source /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+#    echo "conda activate enformer" >> $SINGULARITY_ENVIRONMENT
+#
+
+#    # create condarc
+#cat > /opt/conda/.condarc <<EOF
+#channels:
+#  - conda-forge
+#  - defaults
+#  - bioconda
+#envs_dirs:
+#  - /opt/conda/envs
+#EOF
+#
+
+%test
