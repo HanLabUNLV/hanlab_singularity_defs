@@ -1,0 +1,92 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%labels
+    SINGULARITY_VERSION 3.5.3-1.1.el7
+    SINGULARITY_IMAGE_SIZE 20480
+
+    AUTHOR_NAME Mira Han
+    AUTHOR_EMAIL mira.han@unlv.edu
+
+    LAST_UPDATED 20200427
+
+%environment
+    # Set system locale
+    export LC_ALL=C
+
+    alias ls='ls --color=auto -h'
+    alias rm='rm -i'
+    alias vi='vim'
+
+%files 
+    asm.list
+
+%runscript
+    exec /bin/bash --noprofile  "$@"
+
+%startscript
+    python --version
+
+%post -c /bin/bash
+
+    echo "Hello from inside the container"
+    # Set system locale
+    export LC_ALL=C
+    apt-get -y update && apt-get install -y python wget
+
+    # download and install miniconda 
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /opt/conda
+    source /opt/conda/etc/profile.d/conda.sh
+    conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
+    conda config --add channels conda-forge
+    conda config --append channels bioconda
+    conda update -y -n base conda
+
+    # create conda environment and install conda packages 
+    #conda create -n asm 
+
+    conda create -n asm --file asm.list
+    rm miniconda.sh -f
+    conda clean -a
+
+    # activate conda for further installation
+    conda init
+    conda activate asm
+
+    # install conda packages
+    #conda install bioconda::bandage
+    #conda install bioconda::gfastats
+    #conda install bioconda::flye
+    #conda install bioconda::nanoplot
+
+    # create directories
+    mkdir -p /mnt /scratch 
+    mkdir -p /mnt/storage_cluster /mnt/data_schen_1
+    for i in $(seq 1 10); do
+      mkdir -p /data${i};
+    done
+    mkdir /etc/ncbi
+
+    # create custom bash script to set env
+    echo "## Activate conda environment" >> $SINGULARITY_ENVIRONMENT
+    echo "source /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+    echo "conda activate asm" >> $SINGULARITY_ENVIRONMENT
+
+
+    # create condarc
+cat > /opt/conda/.condarc <<EOF
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+envs_dirs:
+  - /opt/conda/envs
+EOF
+
+
+%test
+    source /opt/conda/etc/profile.d/conda.sh
+    conda info --envs
+    conda activate asm
+    python --version

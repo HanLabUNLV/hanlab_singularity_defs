@@ -1,0 +1,161 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%labels
+    SINGULARITY_VERSION 3.5.3-1.1.el7
+    SINGULARITY_IMAGE_SIZE 20480
+
+    AUTHOR_NAME Richard Van
+    AUTHOR_EMAIL richard.van@unlv.edu
+
+    LAST_UPDATED 20240913
+
+%environment
+    # Set system locale
+    export LC_ALL=C
+
+    alias ls='ls --color=auto -h'
+    alias rm='rm -i'
+    alias vi='vim'
+
+%files 
+    asm.list
+
+%runscript
+    exec /bin/bash --noprofile  "$@"
+
+%startscript
+    python --version
+
+%post -c /bin/bash
+
+    echo "Hello from inside the container"
+    # Set system locale
+    export LC_ALL=C
+    apt-get -y update && apt-get install -y python wget zip pigz gawk
+
+    # download and install miniconda 
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /opt/conda
+    source /opt/conda/etc/profile.d/conda.sh
+    conda install --solver=classic conda-forge::conda-libmamba-solver conda-forge::libmamba conda-forge::libmambapy conda-forge::libarchive
+    conda config --add channels conda-forge
+    conda config --append channels bioconda
+    conda update -y -n base conda
+
+    # create conda environment and install conda packages 
+    #conda create -n asm 
+
+    conda create -n asm --file asm.list
+    rm miniconda.sh -f
+    conda clean -a
+
+    # activate conda for further installation
+    conda init
+    conda activate asm
+
+    # pip install 
+    pip install numpy
+    pip install matplotlib
+    
+    # pip install for puzzle Hi-C
+    pip install biopython
+    pip install h5py
+    pip install networkx
+    pip install numpy
+    pip install pandas
+    pip install scipy
+    pip install matplotlib
+
+
+    # install conda packages
+    conda install bioconda::bandage
+    conda install bioconda::gfastats
+    conda install bioconda::flye
+    conda install bioconda::nanoplot
+    conda install bioconda::porechop_abi
+    conda install bioconda::nanoq
+    conda install bioconda::nextflow
+    conda install bioconda::busco
+    conda install bioconda::bwa
+    conda install bioconda::blast
+#    conda install bioconda::fastp
+#    conda install bioconda::fastqc
+#    conda install bioconda::multiqc
+    conda install bioconda::star
+    conda install bioconda::pilon
+    conda install bioconda::samtools
+    conda install bioconda::minimap2
+    conda install bioconda::liftoff
+    conda install bioconda::mummer4
+    conda install bioconda::gmap
+    conda install bioconda::agat
+#    conda install bioconda::trim-galore
+    conda install bioconda::seqkit
+    conda install bioconda::canu
+#    conda install bioconda::rmats
+    conda install bioconda::bbmap
+#    conda install bioconda::qiime
+#    conda install bioconda::salmon
+#    conda install bioconda::rsem
+#    conda install bioconda::hisat2
+#    conda install bioconda::umitools
+#    conda install bioconda::umi_tools
+#    conda install bioconda::picard
+#    conda install bioconda::stringtie
+    conda install bioconda::bedtools
+#    conda install bioconda::ucsc-bedgraphtobigwig
+#    conda install bioconda::rseqc
+#    conda install bioconda::qualimap
+#    conda install bioconda::bioconductor-dupradar
+#    conda install bioconda::preseq
+#    conda install bioconda::bioconductor-deseq2
+#    conda install bioconda::ratatosk=0.7.6.3
+#    conda install bioconda::ratatosk
+    conda install bioconda::bcftools
+    conda install bioconda::elector
+    conda install bioconda::merqury
+
+    ## for syri
+#    conda install cython numpy scipy pandas=0.23.4 biopython psutil matplotlib=3.0.0
+#    conda install -c conda-forge python-igraph
+#    conda install -c bioconda pysam
+#    conda install -c bioconda longestrunsubsequence 
+#    conda install bioconda::syri
+    conda install -c bionconda syri
+    conda install bioconda::plotsr
+
+#  ## for RepeatMasker
+    conda install bioconda::repeatmasker
+    conda install bioconda::hmmer
+
+    # create directories
+    mkdir -p /mnt /scratch 
+    mkdir -p /mnt/storage_cluster /mnt/data_schen_1
+    for i in $(seq 1 10); do
+      mkdir -p /data${i};
+    done
+    mkdir /etc/ncbi
+
+    # create custom bash script to set env
+    echo "## Activate conda environment" >> $SINGULARITY_ENVIRONMENT
+    echo "source /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+    echo "conda activate asm" >> $SINGULARITY_ENVIRONMENT
+
+
+    # create condarc
+cat > /opt/conda/.condarc <<EOF
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+envs_dirs:
+  - /opt/conda/envs
+EOF
+
+
+%test
+    source /opt/conda/etc/profile.d/conda.sh
+    conda info --envs
+    conda activate asm
+    python --version
